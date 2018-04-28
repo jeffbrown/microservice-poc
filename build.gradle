@@ -1,0 +1,42 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '2.0.1'
+    id 'groovy'
+    id "application"
+    id 'project-reports'
+}
+
+mainClassName = 'people.Application'
+jar {
+    manifest {
+        attributes 'Main-Class': "people.Application"
+    }
+}
+repositories {
+    mavenLocal()
+    jcenter()
+}
+
+dependencies {
+    compileOnly "io.micronaut:inject-groovy:${micronautVersion}"
+
+    compile "io.micronaut.configuration:hibernate-validator:${micronautVersion}"
+    compile "io.micronaut.configuration:hibernate-gorm:${micronautVersion}"
+
+    compile "io.micronaut:http-server-netty:${micronautVersion}"
+
+    compile "io.micronaut:runtime-groovy:${micronautVersion}"
+    runtime 'org.apache.tomcat:tomcat-jdbc:8.0.44'
+    runtime 'com.h2database:h2:1.4.196'
+
+    runtime "ch.qos.logback:logback-classic:1.2.3"
+
+    testCompile("org.spockframework:spock-core:1.1-groovy-2.4") {
+        exclude module:'groovy-all'
+    }
+    testCompile "io.micronaut:discovery-client:${micronautVersion}"
+    testCompile "org.codehaus.groovy:groovy-json:2.5.0-beta-2"
+
+}
+shadowJar {
+    mergeServiceFiles()
+}
