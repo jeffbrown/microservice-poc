@@ -1,6 +1,8 @@
 package people
 
 import groovy.transform.CompileStatic
+import io.micronaut.http.HttpResponse
+import io.micronaut.http.HttpStatus
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.annotation.Post
@@ -41,12 +43,26 @@ class PersonController {
     }
 
     @Put('/{id}/enable')
-    Person enable(long id) {
-        personService.enable id
+    HttpResponse<Person> enable(long id) {
+        Person person = personService.get id
+        if(!person) {
+            null
+        } else if(person.enabled) {
+            HttpResponse.status(HttpStatus.BAD_REQUEST)
+        } else {
+            HttpResponse.ok(personService.disable(person))
+        }
     }
 
     @Put('/{id}/disable')
-    Person disable(long id) {
-        personService.disable id
+    HttpResponse<Person> disable(long id) {
+        Person person = personService.get id
+        if(!person) {
+            null
+        } else if(!person.enabled) {
+            HttpResponse.status(HttpStatus.BAD_REQUEST)
+        } else {
+            HttpResponse.ok(personService.disable(person))
+        }
     }
 }

@@ -189,4 +189,44 @@ class PersonControllerSpec extends Specification {
         HttpClientResponseException ex = thrown()
         ex.status == HttpStatus.NOT_FOUND
     }
+
+    void 'test disabling an already disabled person'() {
+        when:
+        client.toBlocking().retrieve(
+                HttpRequest.PUT("/people/$neilId/disable", ''))
+
+        then:
+        HttpClientResponseException ex = thrown()
+        ex.status == HttpStatus.BAD_REQUEST
+    }
+
+    void 'test enabling an already enabled person'() {
+        when:
+        client.toBlocking().retrieve(
+                HttpRequest.PUT("/people/$geddyId/enable", ''))
+
+        then:
+        HttpClientResponseException ex = thrown()
+        ex.status == HttpStatus.BAD_REQUEST
+    }
+
+    void 'test enabling a non-existent person'() {
+        when:
+        client.toBlocking().retrieve(
+                HttpRequest.PUT("/people/999/enable", ''))
+
+        then:
+        HttpClientResponseException ex = thrown()
+        ex.status == HttpStatus.NOT_FOUND
+    }
+
+    void 'test disabling a non-existent person'() {
+        when:
+        client.toBlocking().retrieve(
+                HttpRequest.PUT("/people/999/disable", ''))
+
+        then:
+        HttpClientResponseException ex = thrown()
+        ex.status == HttpStatus.NOT_FOUND
+    }
 }

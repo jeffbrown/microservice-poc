@@ -30,21 +30,13 @@ abstract class PersonService {
 
     abstract Person save(Person person)
 
-    Person disable(long id) {
-        def person = get(id)
-        if(person) {
-            person.enabled = false
-            save person
-        }
-        person
+    Person disable(Person person) {
+        person.enabled = false
+        save person
     }
 
-    Person enable(long id) {
-        def person = get(id)
-        if(person) {
-            person.enabled = true
-            save person
-        }
-        person
+    Person enable(Person person) {
+        person.enabled = true
+        save person
     }
 }
