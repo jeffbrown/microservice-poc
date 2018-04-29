@@ -40,12 +40,12 @@ class PersonController {
         personService.listDisabled()
     }
 
-    @Put('/enable/{id}')
+    @Put('/{id}/enable')
     Person enable(long id) {
         personService.enable id
     }
 
-    @Put('/disable/{id}')
+    @Put('/{id}/disable')
     Person disable(long id) {
         personService.disable id
     }

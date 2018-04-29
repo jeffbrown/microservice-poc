@@ -115,7 +115,7 @@ class PersonControllerSpec extends Specification {
     void 'test disabling a person'() {
         when:
         def response = client.toBlocking().retrieve(
-                HttpRequest.PUT("/people/disable/$neilId", ''))
+                HttpRequest.PUT("/people/$neilId/disable", ''))
         def json = jsonSlurper.parseText response
 
         then:
