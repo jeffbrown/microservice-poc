@@ -229,4 +229,38 @@ class PersonControllerSpec extends Specification {
         HttpClientResponseException ex = thrown()
         ex.status == HttpStatus.NOT_FOUND
     }
+
+    void 'test creating person with a negative age'() {
+        when:
+        client.toBlocking().retrieve(
+                HttpRequest.POST('/people', '{"firstName":"Last","lastName":"First","age":-1}')
+                        .contentType(MediaType.APPLICATION_JSON))
+
+        then:
+        HttpClientResponseException ex = thrown()
+        ex.status == HttpStatus.BAD_REQUEST
+        ex.message == 'age: must be greater than or equal to 0'
+    }
+
+    void 'test creating person with a lower case first name'() {
+        when:
+        client.toBlocking().retrieve(
+                HttpRequest.POST('/people', '{"firstName":"johnny","lastName":"Winter","age":70}')
+                        .contentType(MediaType.APPLICATION_JSON))
+
+        then:
+        HttpClientResponseException ex = thrown()
+        ex.status == HttpStatus.BAD_REQUEST
+    }
+
+    void 'test creating person with a lower case last name'() {
+        when:
+        client.toBlocking().retrieve(
+                HttpRequest.POST('/people', '{"firstName":"Johnny","lastName":"winter","age":70}')
+                        .contentType(MediaType.APPLICATION_JSON))
+
+        then:
+        HttpClientResponseException ex = thrown()
+        ex.status == HttpStatus.BAD_REQUEST
+    }
 }

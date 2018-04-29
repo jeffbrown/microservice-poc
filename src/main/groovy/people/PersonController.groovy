@@ -7,11 +7,15 @@ import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.annotation.Post
 import io.micronaut.http.annotation.Put
+import io.micronaut.validation.Validated
 
 import javax.inject.Inject
+import javax.validation.constraints.Min
+import javax.validation.constraints.Pattern
 
 @Controller('/people')
 @CompileStatic
+@Validated
 class PersonController {
 
     @Inject
@@ -28,7 +32,9 @@ class PersonController {
     }
 
     @Post('/')
-    Person save(String firstName, String lastName, int age) {
+    Person save(@Pattern(regexp = '^[A-Z].*') String firstName,
+                @Pattern(regexp = '^[A-Z].*') String lastName,
+                @Min(0l) int age) {
         personService.savePerson firstName, lastName, age
     }
 
