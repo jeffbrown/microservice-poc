@@ -30,6 +30,9 @@ dependencies {
 
     runtime "ch.qos.logback:logback-classic:1.2.3"
 
+    runtime 'com.google.cloud.sql:postgres-socket-factory:1.0.5'
+    runtime 'org.postgresql:postgresql:42.2.2'
+
     testCompile("org.spockframework:spock-core:1.1-groovy-2.4") {
         exclude module:'groovy-all'
     }
