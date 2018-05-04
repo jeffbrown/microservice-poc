@@ -20,7 +20,7 @@ trait SpecRequestHelper {
 
     String executePostRequest(String url, String jsonBody, String token) {
         MutableHttpRequest<String> postRequest = createPostRequest(url, jsonBody)
-        postRequest.getHeaders().add('Authorization', "Bearer $token")
+        postRequest.header('Authorization', "Bearer $token")
         client.toBlocking().retrieve(postRequest)
     }
 
@@ -31,7 +31,7 @@ trait SpecRequestHelper {
 
     String executePutRequest(String url, String jsonBody, String token) {
         MutableHttpRequest<String> putRequest = createPutRequest(url, jsonBody)
-        putRequest.getHeaders().add('Authorization', "Bearer $token")
+        putRequest.header('Authorization', "Bearer $token")
         client.toBlocking().retrieve(putRequest)
     }
 
