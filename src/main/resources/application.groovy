@@ -10,7 +10,9 @@ micronaut {
     security {
         enabled = true
         endpoints {
-            login = true
+            login {
+                enabled = true
+            }
         }
         token {
             jwt {
