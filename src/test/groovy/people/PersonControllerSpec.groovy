@@ -1,26 +1,12 @@
 package people
 
-import io.micronaut.context.ApplicationContext
 import io.micronaut.http.HttpStatus
-import io.micronaut.http.client.HttpClient
 import io.micronaut.http.client.exceptions.HttpClientResponseException
-import io.micronaut.runtime.server.EmbeddedServer
-import spock.lang.AutoCleanup
 import spock.lang.Shared
-import spock.lang.Specification
 import spock.lang.Stepwise
 
 @Stepwise
-class PersonControllerSpec extends Specification implements SpecRequestHelper {
-
-    @Shared
-    @AutoCleanup
-    EmbeddedServer embeddedServer =
-            ApplicationContext.run EmbeddedServer
-
-    @Shared
-    @AutoCleanup
-    HttpClient client = HttpClient.create embeddedServer.URL
+class PersonControllerSpec extends AbstractServerSpec {
 
     @Shared
     String geddyId
