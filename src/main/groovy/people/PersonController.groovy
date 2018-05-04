@@ -61,7 +61,7 @@ class PersonController {
         } else if(person.enabled) {
             HttpResponse.status(HttpStatus.BAD_REQUEST)
         } else {
-            HttpResponse.ok(personService.disable(person))
+            HttpResponse.ok(personService.enable(person))
         }
     }
 

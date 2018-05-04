@@ -104,7 +104,6 @@ class PersonControllerSpec extends AbstractServerSpec {
         json.enabled == false
 
     }
-
     void 'test list enabled people after disabling someone'() {
         when:
         String results = executeGetRequest '/people/enabled'
@@ -243,5 +242,18 @@ class PersonControllerSpec extends AbstractServerSpec {
         then:
         HttpClientResponseException ex = thrown()
         ex.status == HttpStatus.BAD_REQUEST
+    }
+
+    void 'test enabling a person'() {
+        when:
+        String token = getJwtToken 'admin', 'password'
+        String url = "/people/$neilId/enable"
+        String response = executePutRequest url, '', token
+        def json = parseJson response
+
+        then:
+        json.firstName == 'Neil'
+        json.lastName == 'Peart'
+        json.enabled == true
     }
 }
