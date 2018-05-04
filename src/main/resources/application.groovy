@@ -13,3 +13,20 @@ if(System.getenv('PG_USERNAME')) {
         password = System.getenv('PG_PASSWORD')
     }
 }
+
+micronaut {
+    security {
+        enabled = true
+        endpoints {
+            login = true
+        }
+        token {
+            jwt {
+                bearer {
+                    enabled = true
+                }
+                enabled = true
+            }
+        }
+    }
+}

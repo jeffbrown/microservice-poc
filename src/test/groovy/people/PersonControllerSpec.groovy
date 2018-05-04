@@ -1,10 +1,7 @@
 package people
 
-import groovy.json.JsonSlurper
 import io.micronaut.context.ApplicationContext
-import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpStatus
-import io.micronaut.http.MediaType
 import io.micronaut.http.client.HttpClient
 import io.micronaut.http.client.exceptions.HttpClientResponseException
 import io.micronaut.runtime.server.EmbeddedServer
@@ -14,33 +11,33 @@ import spock.lang.Specification
 import spock.lang.Stepwise
 
 @Stepwise
-class PersonControllerSpec extends Specification {
+class PersonControllerSpec extends Specification implements SpecRequestHelper {
 
     @Shared
     @AutoCleanup
     EmbeddedServer embeddedServer =
-            ApplicationContext.run(EmbeddedServer)
+            ApplicationContext.run EmbeddedServer
 
     @Shared
     @AutoCleanup
-            client = HttpClient.create(embeddedServer.URL)
+    HttpClient client = HttpClient.create embeddedServer.URL
 
     @Shared
-            jsonSlurper = new JsonSlurper()
+    String geddyId
 
     @Shared
-            geddyId
+    String alexId
+
     @Shared
-            alexId
-    @Shared
-            neilId
+    String neilId
 
     void 'test creating people'() {
         when:
-        def response = client.toBlocking().retrieve(
-                HttpRequest.POST('/people', '{"firstName":"Geddy","lastName":"Lee","age":64}')
-                        .contentType(MediaType.APPLICATION_JSON))
-        def json = jsonSlurper.parseText response
+        String token = getJwtToken 'admin', 'password'
+        String jsonBody = '{"firstName":"Geddy","lastName":"Lee","age":64}'
+        String url = '/people'
+        String response = executePostRequest url, jsonBody, token
+        def json = parseJson response
         geddyId = json.id
 
         then:
@@ -50,10 +47,9 @@ class PersonControllerSpec extends Specification {
         json.enabled == true
 
         when:
-        response = client.toBlocking().retrieve(
-                HttpRequest.POST('/people', '{"firstName":"Alex","lastName":"Lifeson","age":64}')
-                        .contentType(MediaType.APPLICATION_JSON))
-        json = jsonSlurper.parseText response
+        jsonBody = '{"firstName":"Alex","lastName":"Lifeson","age":64}'
+        response = executePostRequest url, jsonBody, token
+        json = parseJson response
         alexId = json.id
 
         then:
@@ -63,10 +59,9 @@ class PersonControllerSpec extends Specification {
         json.enabled == true
 
         when:
-        response = client.toBlocking().retrieve(
-                HttpRequest.POST('/people', '{"firstName":"Neil","lastName":"Peart","age":65}')
-                        .contentType(MediaType.APPLICATION_JSON))
-        json = jsonSlurper.parseText response
+        jsonBody = '{"firstName":"Neil","lastName":"Peart","age":65}'
+        response = executePostRequest url, jsonBody, token
+        json = parseJson response
         neilId = json.id
 
         then:
@@ -78,9 +73,9 @@ class PersonControllerSpec extends Specification {
 
     void 'test list people'() {
         when:
-        def results = client.toBlocking()
-                .retrieve(HttpRequest.GET('/people'))
-        def json = jsonSlurper.parseText results
+        String url = '/people'
+        String results = executeGetRequest url
+        def json = parseJson results
 
         then:
         json.size() == 3
@@ -91,9 +86,8 @@ class PersonControllerSpec extends Specification {
 
     void 'test list enabled people'() {
         when:
-        def results = client.toBlocking()
-                .retrieve(HttpRequest.GET('/people/enabled'))
-        def json = jsonSlurper.parseText results
+        String results = executeGetRequest '/people/enabled'
+        def json = parseJson results
 
         then:
         json.size() == 3
@@ -104,9 +98,8 @@ class PersonControllerSpec extends Specification {
 
     void 'test list disabled people'() {
         when:
-        def results = client.toBlocking()
-                .retrieve(HttpRequest.GET('/people/disabled'))
-        def json = jsonSlurper.parseText results
+        String results = executeGetRequest '/people/disabled'
+        def json = parseJson results
 
         then:
         json.size() == 0
@@ -114,9 +107,10 @@ class PersonControllerSpec extends Specification {
 
     void 'test disabling a person'() {
         when:
-        def response = client.toBlocking().retrieve(
-                HttpRequest.PUT("/people/$neilId/disable", ''))
-        def json = jsonSlurper.parseText response
+        String token = getJwtToken 'admin', 'password'
+        String url = "/people/$neilId/disable"
+        String response = executePutRequest url, '', token
+        def json = parseJson response
 
         then:
         json.firstName == 'Neil'
@@ -127,9 +121,8 @@ class PersonControllerSpec extends Specification {
 
     void 'test list enabled people after disabling someone'() {
         when:
-        def results = client.toBlocking()
-                .retrieve(HttpRequest.GET('/people/enabled'))
-        def json = jsonSlurper.parseText results
+        String results = executeGetRequest '/people/enabled'
+        def json = parseJson results
 
         then:
         json.size() == 2
@@ -139,9 +132,8 @@ class PersonControllerSpec extends Specification {
 
     void 'test list disabled people after disabling someone'() {
         when:
-        def results = client.toBlocking()
-                .retrieve(HttpRequest.GET('/people/disabled'))
-        def json = jsonSlurper.parseText results
+        String results = executeGetRequest '/people/disabled'
+        def json = parseJson results
 
         then:
         json.size() == 1
@@ -150,9 +142,8 @@ class PersonControllerSpec extends Specification {
 
     void 'test retrieving individual people'() {
         when:
-        def results = client.toBlocking()
-                .retrieve(HttpRequest.GET("/people/$geddyId"))
-        def json = jsonSlurper.parseText results
+        String results = executeGetRequest "/people/$geddyId"
+        def json = parseJson results
 
         then:
         json.firstName == 'Geddy'
@@ -160,9 +151,8 @@ class PersonControllerSpec extends Specification {
         json.enabled == true
 
         when:
-        results = client.toBlocking()
-                .retrieve(HttpRequest.GET("/people/$alexId"))
-        json = jsonSlurper.parseText results
+        results = executeGetRequest "/people/$alexId"
+        json = parseJson results
 
         then:
         json.firstName == 'Alex'
@@ -170,9 +160,8 @@ class PersonControllerSpec extends Specification {
         json.enabled == true
 
         when:
-        results = client.toBlocking()
-                .retrieve(HttpRequest.GET("/people/$neilId"))
-        json = jsonSlurper.parseText results
+        results = executeGetRequest "/people/$neilId"
+        json = parseJson results
 
         then:
         json.firstName == 'Neil'
@@ -182,8 +171,7 @@ class PersonControllerSpec extends Specification {
 
     void 'test retrieving a person that does not exist'() {
         when:
-        client.toBlocking()
-                .retrieve(HttpRequest.GET("/people/99999"))
+        executeGetRequest "/people/99999"
 
         then:
         HttpClientResponseException ex = thrown()
@@ -192,8 +180,9 @@ class PersonControllerSpec extends Specification {
 
     void 'test disabling an already disabled person'() {
         when:
-        client.toBlocking().retrieve(
-                HttpRequest.PUT("/people/$neilId/disable", ''))
+        String token = getJwtToken 'admin', 'password'
+        String url = "/people/$neilId/disable"
+        executePutRequest url, '', token
 
         then:
         HttpClientResponseException ex = thrown()
@@ -202,8 +191,9 @@ class PersonControllerSpec extends Specification {
 
     void 'test enabling an already enabled person'() {
         when:
-        client.toBlocking().retrieve(
-                HttpRequest.PUT("/people/$geddyId/enable", ''))
+        String token = getJwtToken 'admin', 'password'
+        String url = "/people/$geddyId/enable"
+        executePutRequest url, '', token
 
         then:
         HttpClientResponseException ex = thrown()
@@ -212,8 +202,9 @@ class PersonControllerSpec extends Specification {
 
     void 'test enabling a non-existent person'() {
         when:
-        client.toBlocking().retrieve(
-                HttpRequest.PUT("/people/999/enable", ''))
+        String token = getJwtToken 'admin', 'password'
+        String url = '/people/999/enable'
+        executePutRequest url, '', token
 
         then:
         HttpClientResponseException ex = thrown()
@@ -222,8 +213,9 @@ class PersonControllerSpec extends Specification {
 
     void 'test disabling a non-existent person'() {
         when:
-        client.toBlocking().retrieve(
-                HttpRequest.PUT("/people/999/disable", ''))
+        String token = getJwtToken 'admin', 'password'
+        String url = '/people/999/disable'
+        executePutRequest url, '', token
 
         then:
         HttpClientResponseException ex = thrown()
@@ -232,9 +224,10 @@ class PersonControllerSpec extends Specification {
 
     void 'test creating person with a negative age'() {
         when:
-        client.toBlocking().retrieve(
-                HttpRequest.POST('/people', '{"firstName":"Last","lastName":"First","age":-1}')
-                        .contentType(MediaType.APPLICATION_JSON))
+        String token = getJwtToken 'admin', 'password'
+        String jsonBody = '{"firstName":"First","lastName":"Last","age":-1}'
+        String url = '/people'
+        executePostRequest url, jsonBody, token
 
         then:
         HttpClientResponseException ex = thrown()
@@ -244,9 +237,10 @@ class PersonControllerSpec extends Specification {
 
     void 'test creating person with a lower case first name'() {
         when:
-        client.toBlocking().retrieve(
-                HttpRequest.POST('/people', '{"firstName":"johnny","lastName":"Winter","age":70}')
-                        .contentType(MediaType.APPLICATION_JSON))
+        String token = getJwtToken 'admin', 'password'
+        String jsonBody = '{"firstName":"johnny","lastName":"Winter","age":70}'
+        String url = '/people'
+        executePostRequest url, jsonBody, token
 
         then:
         HttpClientResponseException ex = thrown()
@@ -255,9 +249,10 @@ class PersonControllerSpec extends Specification {
 
     void 'test creating person with a lower case last name'() {
         when:
-        client.toBlocking().retrieve(
-                HttpRequest.POST('/people', '{"firstName":"Johnny","lastName":"winter","age":70}')
-                        .contentType(MediaType.APPLICATION_JSON))
+        String token = getJwtToken 'admin', 'password'
+        String jsonBody = '{"firstName":"Johnny","lastName":"winter","age":70}'
+        String url = '/people'
+        executePostRequest url, jsonBody, token
 
         then:
         HttpClientResponseException ex = thrown()

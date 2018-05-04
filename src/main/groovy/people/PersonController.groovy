@@ -7,6 +7,8 @@ import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.annotation.Post
 import io.micronaut.http.annotation.Put
+import io.micronaut.security.Secured
+import io.micronaut.security.rules.SecurityRule
 import io.micronaut.validation.Validated
 
 import javax.inject.Inject
@@ -16,6 +18,7 @@ import javax.validation.constraints.Pattern
 @Controller('/people')
 @CompileStatic
 @Validated
+@Secured(SecurityRule.IS_ANONYMOUS)
 class PersonController {
 
     @Inject
@@ -31,6 +34,7 @@ class PersonController {
         personService.get id
     }
 
+    @Secured('ROLE_ADMIN')
     @Post('/')
     Person save(@Pattern(regexp = '^[A-Z].*') String firstName,
                 @Pattern(regexp = '^[A-Z].*') String lastName,
@@ -48,6 +52,7 @@ class PersonController {
         personService.listDisabled()
     }
 
+    @Secured('ROLE_USER')
     @Put('/{id}/enable')
     HttpResponse<Person> enable(long id) {
         Person person = personService.get id
@@ -60,6 +65,7 @@ class PersonController {
         }
     }
 
+    @Secured('ROLE_USER')
     @Put('/{id}/disable')
     HttpResponse<Person> disable(long id) {
         Person person = personService.get id

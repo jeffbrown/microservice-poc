@@ -25,6 +25,10 @@ dependencies {
     compile "io.micronaut:http-server-netty:${micronautVersion}"
 
     compile "io.micronaut:runtime-groovy:${micronautVersion}"
+
+    compile "io.micronaut:security:${micronautVersion}"
+    runtime "io.micronaut:security-jwt:${micronautVersion}"
+
     runtime 'org.apache.tomcat:tomcat-jdbc:8.0.44'
     runtime 'com.h2database:h2:1.4.196'
 
