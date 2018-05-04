@@ -45,10 +45,6 @@ dependencies {
     }
     testCompile "io.micronaut:discovery-client:${micronautVersion}"
     testCompile "org.codehaus.groovy:groovy-json:2.5.0-beta-2"
-
-    // TODO this is temporary and is only here because of a bug
-    // in the latest micronaut snapshots
-    testRuntime "io.micronaut.configuration:aws-common:${micronautVersion}"
 }
 
 shadowJar {
