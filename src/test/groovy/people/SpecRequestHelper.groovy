@@ -24,9 +24,19 @@ trait SpecRequestHelper {
         client.toBlocking().retrieve(postRequest)
     }
 
+    String executePostRequest(String url, String jsonBody) {
+        MutableHttpRequest<String> postRequest = createPostRequest(url, jsonBody)
+        client.toBlocking().retrieve(postRequest)
+    }
+
     String executePutRequest(String url, String jsonBody, String token) {
         MutableHttpRequest<String> putRequest = createPutRequest(url, jsonBody)
         putRequest.getHeaders().add('Authorization', "Bearer $token")
+        client.toBlocking().retrieve(putRequest)
+    }
+
+    String executePutRequest(String url, String jsonBody) {
+        MutableHttpRequest<String> putRequest = createPutRequest(url, jsonBody)
         client.toBlocking().retrieve(putRequest)
     }
 
