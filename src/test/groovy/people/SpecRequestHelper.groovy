@@ -3,9 +3,12 @@ package people
 import groovy.json.JsonSlurper
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
+import io.micronaut.core.type.Argument
 import io.micronaut.http.HttpRequest
+import io.micronaut.http.HttpResponse
 import io.micronaut.http.MediaType
 import io.micronaut.http.MutableHttpRequest
+import io.micronaut.http.client.BlockingHttpClient
 import io.micronaut.http.client.HttpClient
 
 @CompileStatic
@@ -13,31 +16,32 @@ trait SpecRequestHelper {
 
     JsonSlurper jsonSlurper = new JsonSlurper()
 
-    String executeGetRequest(String url) {
+    HttpResponse executeGetRequest(String url) {
         client.toBlocking()
-                .retrieve(HttpRequest.GET(url))
+                .exchange(HttpRequest.GET(url), Argument.of(String))
     }
 
-    String executePostRequest(String url, String jsonBody, String token) {
+    HttpResponse executePostRequest(String url, String jsonBody, String token) {
         MutableHttpRequest<String> postRequest = createPostRequest(url, jsonBody)
         postRequest.header('Authorization', "Bearer $token")
-        client.toBlocking().retrieve(postRequest)
+        def blocking = client.toBlocking()
+        blocking.exchange(postRequest, Argument.of(String))
     }
 
-    String executePostRequest(String url, String jsonBody) {
+    HttpResponse executePostRequest(String url, String jsonBody) {
         MutableHttpRequest<String> postRequest = createPostRequest(url, jsonBody)
-        client.toBlocking().retrieve(postRequest)
+        client.toBlocking().exchange(postRequest, Argument.of(String))
     }
 
-    String executePutRequest(String url, String jsonBody, String token) {
+    HttpResponse executePutRequest(String url, String jsonBody, String token) {
         MutableHttpRequest<String> putRequest = createPutRequest(url, jsonBody)
         putRequest.header('Authorization', "Bearer $token")
-        client.toBlocking().retrieve(putRequest)
+        client.toBlocking().exchange(putRequest, Argument.of(String))
     }
 
-    String executePutRequest(String url, String jsonBody) {
+    HttpResponse executePutRequest(String url, String jsonBody) {
         MutableHttpRequest<String> putRequest = createPutRequest(url, jsonBody)
-        client.toBlocking().retrieve(putRequest)
+        client.toBlocking().exchange(putRequest, Argument.of(String))
     }
 
     MutableHttpRequest<String> createPostRequest(String url, String jsonBody) {

@@ -1,5 +1,6 @@
 package people
 
+import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpStatus
 import io.micronaut.http.client.exceptions.HttpClientResponseException
 import spock.lang.Shared
@@ -22,11 +23,12 @@ class PersonControllerSpec extends AbstractServerSpec {
         String token = getJwtToken 'admin', 'password'
         String jsonBody = '{"firstName":"Geddy","lastName":"Lee","age":64}'
         String url = '/people'
-        String response = executePostRequest url, jsonBody, token
-        def json = parseJson response
+        HttpResponse response = executePostRequest url, jsonBody, token
+        def json = parseJson response.body()
         geddyId = json.id
 
         then:
+        response.status == HttpStatus.CREATED
         json.firstName == 'Geddy'
         json.lastName == 'Lee'
         json.age == 64
@@ -35,10 +37,11 @@ class PersonControllerSpec extends AbstractServerSpec {
         when:
         jsonBody = '{"firstName":"Alex","lastName":"Lifeson","age":64}'
         response = executePostRequest url, jsonBody, token
-        json = parseJson response
+        json = parseJson response.body()
         alexId = json.id
 
         then:
+        response.status == HttpStatus.CREATED
         json.firstName == 'Alex'
         json.lastName == 'Lifeson'
         json.age == 64
@@ -47,10 +50,11 @@ class PersonControllerSpec extends AbstractServerSpec {
         when:
         jsonBody = '{"firstName":"Neil","lastName":"Peart","age":65}'
         response = executePostRequest url, jsonBody, token
-        json = parseJson response
+        json = parseJson response.body()
         neilId = json.id
 
         then:
+        response.status == HttpStatus.CREATED
         json.firstName == 'Neil'
         json.lastName == 'Peart'
         json.age == 65
@@ -60,8 +64,8 @@ class PersonControllerSpec extends AbstractServerSpec {
     void 'test list people'() {
         when:
         String url = '/people'
-        String results = executeGetRequest url
-        def json = parseJson results
+        HttpResponse results = executeGetRequest url
+        def json = parseJson results.body()
 
         then:
         json.size() == 3
@@ -72,8 +76,8 @@ class PersonControllerSpec extends AbstractServerSpec {
 
     void 'test list enabled people'() {
         when:
-        String results = executeGetRequest '/people/enabled'
-        def json = parseJson results
+        HttpResponse results = executeGetRequest '/people/enabled'
+        def json = parseJson results.body()
 
         then:
         json.size() == 3
@@ -84,8 +88,8 @@ class PersonControllerSpec extends AbstractServerSpec {
 
     void 'test list disabled people'() {
         when:
-        String results = executeGetRequest '/people/disabled'
-        def json = parseJson results
+        HttpResponse results = executeGetRequest '/people/disabled'
+        def json = parseJson results.body()
 
         then:
         json.size() == 0
@@ -95,8 +99,8 @@ class PersonControllerSpec extends AbstractServerSpec {
         when:
         String token = getJwtToken 'admin', 'password'
         String url = "/people/$neilId/disable"
-        String response = executePutRequest url, '', token
-        def json = parseJson response
+        HttpResponse response = executePutRequest url, '', token
+        def json = parseJson response.body()
 
         then:
         json.firstName == 'Neil'
@@ -106,8 +110,8 @@ class PersonControllerSpec extends AbstractServerSpec {
     }
     void 'test list enabled people after disabling someone'() {
         when:
-        String results = executeGetRequest '/people/enabled'
-        def json = parseJson results
+        HttpResponse results = executeGetRequest '/people/enabled'
+        def json = parseJson results.body()
 
         then:
         json.size() == 2
@@ -117,8 +121,8 @@ class PersonControllerSpec extends AbstractServerSpec {
 
     void 'test list disabled people after disabling someone'() {
         when:
-        String results = executeGetRequest '/people/disabled'
-        def json = parseJson results
+        HttpResponse results = executeGetRequest '/people/disabled'
+        def json = parseJson results.body()
 
         then:
         json.size() == 1
@@ -127,8 +131,8 @@ class PersonControllerSpec extends AbstractServerSpec {
 
     void 'test retrieving individual people'() {
         when:
-        String results = executeGetRequest "/people/$geddyId"
-        def json = parseJson results
+        HttpResponse results = executeGetRequest "/people/$geddyId"
+        def json = parseJson results.body()
 
         then:
         json.firstName == 'Geddy'
@@ -137,7 +141,7 @@ class PersonControllerSpec extends AbstractServerSpec {
 
         when:
         results = executeGetRequest "/people/$alexId"
-        json = parseJson results
+        json = parseJson results.body()
 
         then:
         json.firstName == 'Alex'
@@ -146,7 +150,7 @@ class PersonControllerSpec extends AbstractServerSpec {
 
         when:
         results = executeGetRequest "/people/$neilId"
-        json = parseJson results
+        json = parseJson results.body()
 
         then:
         json.firstName == 'Neil'
@@ -248,8 +252,8 @@ class PersonControllerSpec extends AbstractServerSpec {
         when:
         String token = getJwtToken 'admin', 'password'
         String url = "/people/$neilId/enable"
-        String response = executePutRequest url, '', token
-        def json = parseJson response
+        HttpResponse response = executePutRequest url, '', token
+        def json = parseJson response.body()
 
         then:
         json.firstName == 'Neil'

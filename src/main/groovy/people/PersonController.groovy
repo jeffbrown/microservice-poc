@@ -36,10 +36,10 @@ class PersonController {
 
     @Secured('ROLE_ADMIN')
     @Post('/')
-    Person save(@Pattern(regexp = '^[A-Z].*') String firstName,
+    HttpResponse<Person> save(@Pattern(regexp = '^[A-Z].*') String firstName,
                 @Pattern(regexp = '^[A-Z].*') String lastName,
                 @Min(0l) int age) {
-        personService.savePerson firstName, lastName, age
+        HttpResponse.created(personService.savePerson(firstName, lastName, age))
     }
 
     @Get('/enabled')
