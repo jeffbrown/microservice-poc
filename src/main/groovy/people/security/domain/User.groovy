@@ -16,4 +16,8 @@ class User implements UserState {
         username blank: false, unique: true
         password blank: false
     }
+
+    static mapping = {
+        table 'users'
+    }
 }
