@@ -11,7 +11,7 @@ import io.micronaut.http.client.Client
 interface PersonClient {
 
     @Post('/')
-    HttpResponse createPerson(String firstName, String lastName, int age, @Header('Authorization') String token)
+    HttpResponse createPerson(String firstName, String lastName, int age, @Header String authorization)
 
     @Get('/')
     List<Person> list()
@@ -23,10 +23,10 @@ interface PersonClient {
     List<Person> listDisabled()
 
     @Put('/{id}/enable')
-    HttpResponse enable(long id, @Header('Authorization') String token)
+    HttpResponse enable(long id, @Header String authorization)
 
     @Put('/{id}/disable')
-    HttpResponse disable(long id, @Header('Authorization') String token)
+    HttpResponse disable(long id, @Header String authorization)
 
     @Get('/{id}')
     HttpResponse get(long id)
