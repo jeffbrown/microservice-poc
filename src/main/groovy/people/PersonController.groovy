@@ -37,8 +37,8 @@ class PersonController {
     @Secured('ROLE_ADMIN')
     @Post('/')
     HttpResponse<Person> save(@Pattern(regexp = '^[A-Z].*') String firstName,
-                @Pattern(regexp = '^[A-Z].*') String lastName,
-                @Min(0l) int age) {
+                              @Pattern(regexp = '^[A-Z].*') String lastName,
+                              @Min(0l) int age) {
         HttpResponse.created(personService.savePerson(firstName, lastName, age))
     }
 
@@ -56,9 +56,9 @@ class PersonController {
     @Put('/{id}/enable')
     HttpResponse<Person> enable(long id) {
         Person person = personService.get id
-        if(!person) {
+        if (!person) {
             null
-        } else if(person.enabled) {
+        } else if (person.enabled) {
             HttpResponse.status(HttpStatus.BAD_REQUEST)
         } else {
             HttpResponse.ok(personService.enable(person))
@@ -69,9 +69,9 @@ class PersonController {
     @Put('/{id}/disable')
     HttpResponse<Person> disable(long id) {
         Person person = personService.get id
-        if(!person) {
+        if (!person) {
             null
-        } else if(!person.enabled) {
+        } else if (!person.enabled) {
             HttpResponse.status(HttpStatus.BAD_REQUEST)
         } else {
             HttpResponse.ok(personService.disable(person))
