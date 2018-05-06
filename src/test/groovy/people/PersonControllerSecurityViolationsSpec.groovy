@@ -8,9 +8,7 @@ class PersonControllerSecurityViolationsSpec extends AbstractServerSpec {
     void 'test creating a person with non admin credentials'() {
         when:
         String token = getJwtToken 'user', 'password'
-        String jsonBody = '{"firstName":"Geddy","lastName":"Lee","age":64}'
-        String url = '/people'
-        executePostRequest url, jsonBody, token
+        personClient.createPerson 'Geddy', 'Lee', 64, "Bearer $token"
 
         then:
         HttpClientResponseException ex = thrown()
@@ -19,9 +17,7 @@ class PersonControllerSecurityViolationsSpec extends AbstractServerSpec {
 
     void 'test creating a person without credentials'() {
         when:
-        String jsonBody = '{"firstName":"Geddy","lastName":"Lee","age":64}'
-        String url = '/people'
-        executePostRequest url, jsonBody
+        personClient.createPerson 'Geddy', 'Lee', 64, ''
 
         then:
         HttpClientResponseException ex = thrown()
@@ -30,7 +26,7 @@ class PersonControllerSecurityViolationsSpec extends AbstractServerSpec {
 
     void 'test disabling a person without credentials'() {
         when:
-        executePutRequest '/people/999/disable', ''
+        personClient.disable 999, ''
 
         then:
         HttpClientResponseException ex = thrown()

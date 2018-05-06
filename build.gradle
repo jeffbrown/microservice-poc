@@ -45,6 +45,7 @@ dependencies {
     }
     testCompile "io.micronaut:discovery-client:${micronautVersion}"
     testCompile "org.codehaus.groovy:groovy-json:2.5.0-beta-2"
+    testCompile "io.micronaut:inject-groovy:${micronautVersion}"
 }
 
 shadowJar {
