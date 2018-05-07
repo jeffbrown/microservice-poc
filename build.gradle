@@ -19,6 +19,7 @@ repositories {
 dependencies {
     compileOnly "io.micronaut:inject-groovy:${micronautVersion}"
 
+    compile 'org.codehaus.groovy:groovy-templates:2.5.0-beta-2'
     compile "io.micronaut.configuration:hibernate-validator:${micronautVersion}"
     compile "io.micronaut.configuration:hibernate-gorm:${micronautVersion}"
 
@@ -40,6 +41,7 @@ dependencies {
     compile "org.pac4j:pac4j-core:${pac4jVersion}"
     compile "org.springframework.security:spring-security-crypto:${springSecurityCryptoVersion}"
 
+    compile 'com.sendgrid:sendgrid-java:2.2.2'
     testCompile("org.spockframework:spock-core:1.1-groovy-2.4") {
         exclude module:'groovy-all'
     }
