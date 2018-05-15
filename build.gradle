@@ -1,9 +1,22 @@
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.google.cloud.tools:appengine-gradle-plugin:1.3.3'
+    }
+}
+
+
 plugins {
     id 'com.github.johnrengelman.shadow' version '2.0.1'
     id 'groovy'
     id "application"
     id 'project-reports'
 }
+
+apply plugin: 'com.google.cloud.tools.appengine'
 
 mainClassName = 'people.Application'
 jar {
@@ -52,4 +65,15 @@ dependencies {
 
 shadowJar {
     mergeServiceFiles()
+}
+
+appengine {
+    stage {
+        artifact = 'build/libs/microservice-poc-all.jar'
+    }
+    deploy {
+        stopPreviousVersion = true
+        promote = true
+        project = 'microservice-poc-202623'
+    }
 }
