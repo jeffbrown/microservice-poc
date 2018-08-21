@@ -3,10 +3,13 @@ package people.email
 import groovy.text.SimpleTemplateEngine
 import groovy.text.Template
 import groovy.text.TemplateEngine
+import groovy.transform.CompileStatic
+import people.Person
 import people.PersonService
 
 import javax.inject.Singleton
 
+@CompileStatic
 @Singleton
 class ReportService {
 
@@ -27,15 +30,15 @@ class ReportService {
     }
 
     protected String generateEmailBody() {
-        def disabledPeople = personService.listDisabled()
-        def enabledPeople = personService.listEnabled()
+        List<Person> disabledPeople = personService.listDisabled()
+        List<Person> enabledPeople = personService.listEnabled()
 
-        def model = [
+        Map<String, List<Person>> model = [
                 disabledPeople: disabledPeople,
                 enabledPeople : enabledPeople
         ]
 
-        def text = '''
+        String text = '''
 Enabled People (<%= enabledPeople.size() %>):
 
 
