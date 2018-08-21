@@ -13,6 +13,9 @@ micronaut {
             login {
                 enabled = true
             }
+            oauth {
+                enabled = true
+            }
         }
         token {
             jwt {
