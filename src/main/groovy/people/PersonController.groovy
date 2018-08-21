@@ -54,27 +54,29 @@ class PersonController {
 
     @Secured('ROLE_USER')
     @Put('/{id}/enable')
-    HttpResponse<Person> enable(long id) {
+    HttpResponse<Person> enable(Long id) {
         Person person = personService.get id
-        if (!person) {
-            null
-        } else if (person.enabled) {
-            HttpResponse.status(HttpStatus.BAD_REQUEST)
-        } else {
-            HttpResponse.ok(personService.enable(person))
+        if (person == null) {
+            return HttpResponse.notFound()
         }
+        if (person.enabled) {
+            return HttpResponse.status(HttpStatus.BAD_REQUEST)
+        }
+        personService.enable(id)
+        HttpResponse.ok()
     }
 
     @Secured('ROLE_USER')
     @Put('/{id}/disable')
-    HttpResponse<Person> disable(long id) {
+    HttpResponse<Person> disable(Long id) {
         Person person = personService.get id
-        if (!person) {
-            null
-        } else if (!person.enabled) {
-            HttpResponse.status(HttpStatus.BAD_REQUEST)
-        } else {
-            HttpResponse.ok(personService.disable(person))
+        if (person==null) {
+            return HttpResponse.notFound()
         }
+        if (!person.enabled) {
+            return HttpResponse.status(HttpStatus.BAD_REQUEST)
+        }
+        personService.disable(id)
+        HttpResponse.ok()
     }
 }
