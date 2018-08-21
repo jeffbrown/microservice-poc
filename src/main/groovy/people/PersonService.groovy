@@ -10,6 +10,8 @@ import groovy.transform.CompileStatic
 interface PersonService {
     int count()
 
+    Number countById(long id)
+
     Person get(long id)
 
     Person savePerson(String firstName,
@@ -31,9 +33,16 @@ interface PersonService {
 
     Person save(Person person)
 
-    @Query("update ${Person person} set ${person.enabled} = false where person.id = $id")
+    @Query("""\
+update ${Person person} 
+set ${person.enabled} = false 
+where person.id = $id and ${person.enabled} = true""")
     Number disable(Long id)
 
-    @Query("update ${Person person} set ${person.enabled} = true where person.id = $id")
+    @Query("""\
+update ${Person person} 
+set ${person.enabled} = true 
+where person.id = $id and ${person.enabled} = false
+""")
     Number enable(Long id)
 }
