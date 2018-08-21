@@ -16,10 +16,14 @@ micronaut {
         }
         token {
             jwt {
-                bearer {
-                    enabled = true
-                }
                 enabled = true
+                signatures {
+                    secret {
+                        generator {
+                            secret='pleaseChangeThisSecretForANewOne'
+                        }
+                    }
+                }
             }
         }
     }
