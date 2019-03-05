@@ -1,7 +1,7 @@
 package people
 
 import io.micronaut.http.annotation.Post
-import io.micronaut.http.client.Client
+import io.micronaut.http.client.annotation.Client
 
 @Client('/login')
 interface LoginClient {
