@@ -30,18 +30,18 @@ repositories {
 }
 
 dependencies {
-    compileOnly "io.micronaut:inject-groovy:${micronautVersion}"
+    compileOnly "io.micronaut:micronaut-inject-groovy:${micronautVersion}"
 
     compile 'org.codehaus.groovy:groovy-templates:2.5.0-beta-2'
-    compile "io.micronaut.configuration:hibernate-validator:${micronautVersion}"
-    compile "io.micronaut.configuration:hibernate-gorm:${micronautVersion}"
+    compile "io.micronaut.configuration:hibernate-validator:${hibernateVersion}"
+    compile "io.micronaut.configuration:hibernate-gorm:${hibernateVersion}"
 
-    compile "io.micronaut:http-server-netty:${micronautVersion}"
+    compile "io.micronaut:micronaut-http-server-netty:${micronautVersion}"
 
-    compile "io.micronaut:runtime-groovy:${micronautVersion}"
+    compile "io.micronaut:micronaut-runtime-groovy:${groovyRuntimeVersion}"
 
-    compile "io.micronaut:security:${micronautVersion}"
-    runtime "io.micronaut:security-jwt:${micronautVersion}"
+    compile "io.micronaut:micronaut-security:${micronautSecurityVersion}"
+    runtime "io.micronaut:security-jwt:${securityJwtVersion}"
 
     runtime 'org.apache.tomcat:tomcat-jdbc:8.0.44'
     runtime 'com.h2database:h2:1.4.196'
@@ -58,9 +58,9 @@ dependencies {
     testCompile("org.spockframework:spock-core:1.1-groovy-2.4") {
         exclude module:'groovy-all'
     }
-    testCompile "io.micronaut:discovery-client:${micronautVersion}"
+    testCompile "io.micronaut:discovery-client:${discoveryClientVersion}"
     testCompile "org.codehaus.groovy:groovy-json:2.5.0-beta-2"
-    testCompile "io.micronaut:inject-groovy:${micronautVersion}"
+    testCompile "io.micronaut:micronaut-inject-groovy:${micronautVersion}"
 }
 
 shadowJar {
