@@ -1,42 +1,48 @@
 package people
 
+import grails.gorm.services.Query
 import grails.gorm.services.Service
 import grails.gorm.services.Where
 import groovy.transform.CompileStatic
 
 @Service(Person)
 @CompileStatic
-abstract class PersonService {
-    abstract int count()
+interface PersonService {
+    int count()
 
-    abstract Person get(long id)
+    Number countById(long id)
 
-    abstract Person savePerson(String firstName,
-                               String lastName,
-                               int age)
+    Person get(long id)
 
-    abstract Person savePerson(String firstName,
-                               String lastName,
-                               int age,
-                               boolean enabled)
+    Person savePerson(String firstName,
+                      String lastName,
+                      int age)
 
-    abstract List<Person> list()
+    Person savePerson(String firstName,
+                      String lastName,
+                      int age,
+                      boolean enabled)
+
+    List<Person> list()
 
     @Where({ enabled == true })
-    abstract List<Person> listEnabled()
+    List<Person> listEnabled()
 
     @Where({ enabled == false })
-    abstract List<Person> listDisabled()
+    List<Person> listDisabled()
 
-    abstract Person save(Person person)
+    Person save(Person person)
 
-    Person disable(Person person) {
-        person.enabled = false
-        save person
-    }
+    @Query("""\
+update ${Person person} 
+set ${person.enabled} = false 
+where person.id = $id and ${person.enabled} = true""")
+    Number disable(Long id)
 
-    Person enable(Person person) {
-        person.enabled = true
-        save person
-    }
+    @Query("""\
+update ${Person person} 
+set ${person.enabled} = true 
+where person.id = $id and ${person.enabled} = false
+""")
+    Number enable(Long id)
 }

@@ -13,13 +13,20 @@ micronaut {
             login {
                 enabled = true
             }
+            oauth {
+                enabled = true
+            }
         }
         token {
             jwt {
-                bearer {
-                    enabled = true
-                }
                 enabled = true
+                signatures {
+                    secret {
+                        generator {
+                            secret='pleaseChangeThisSecretForANewOne'
+                        }
+                    }
+                }
             }
         }
     }

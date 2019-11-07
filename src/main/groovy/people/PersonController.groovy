@@ -1,6 +1,7 @@
 package people
 
 import groovy.transform.CompileStatic
+import io.micronaut.http.HttpHeaders
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpStatus
 import io.micronaut.http.annotation.Controller
@@ -36,10 +37,12 @@ class PersonController {
 
     @Secured('ROLE_ADMIN')
     @Post('/')
-    HttpResponse<Person> save(@Pattern(regexp = '^[A-Z].*') String firstName,
-                              @Pattern(regexp = '^[A-Z].*') String lastName,
-                              @Min(0l) int age) {
-        HttpResponse.created(personService.savePerson(firstName, lastName, age))
+    HttpResponse save(@Pattern(regexp = '^[A-Z].*') String firstName,
+                      @Pattern(regexp = '^[A-Z].*') String lastName,
+                      @Min(0l) int age) {
+        Person person = personService.savePerson(firstName, lastName, age)
+        HttpResponse.status(HttpStatus.CREATED)
+                .header(HttpHeaders.LOCATION, locationHeader(person.id))
     }
 
     @Get('/enabled')
@@ -54,27 +57,33 @@ class PersonController {
 
     @Secured('ROLE_USER')
     @Put('/{id}/enable')
-    HttpResponse<Person> enable(long id) {
-        Person person = personService.get id
-        if (!person) {
-            null
-        } else if (person.enabled) {
-            HttpResponse.status(HttpStatus.BAD_REQUEST)
-        } else {
-            HttpResponse.ok(personService.enable(person))
+    HttpResponse enable(long id) {
+        Number usersUpdated = personService.enable(id)
+        if(!usersUpdated) {
+            if(!personService.countById(id)) {
+                return HttpResponse.status(HttpStatus.NOT_FOUND)
+            }
+            return HttpResponse.status(HttpStatus.BAD_REQUEST)
         }
+        HttpResponse.status(HttpStatus.OK)
+                .header(HttpHeaders.LOCATION, locationHeader(id))
     }
 
     @Secured('ROLE_USER')
     @Put('/{id}/disable')
-    HttpResponse<Person> disable(long id) {
-        Person person = personService.get id
-        if (!person) {
-            null
-        } else if (!person.enabled) {
-            HttpResponse.status(HttpStatus.BAD_REQUEST)
-        } else {
-            HttpResponse.ok(personService.disable(person))
+    HttpResponse disable(long id) {
+        Number usersUpdated = personService.disable(id)
+        if(!usersUpdated) {
+            if(!personService.countById(id)) {
+                return HttpResponse.status(HttpStatus.NOT_FOUND)
+            }
+            return HttpResponse.status(HttpStatus.BAD_REQUEST)
         }
+        HttpResponse.status(HttpStatus.OK)
+                .header(HttpHeaders.LOCATION, locationHeader(id))
+    }
+
+    protected String locationHeader(long id) {
+        "/people/$id"
     }
 }

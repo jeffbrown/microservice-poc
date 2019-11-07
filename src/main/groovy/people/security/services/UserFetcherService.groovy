@@ -21,11 +21,6 @@ class UserFetcherService implements UserFetcher {
     @Override
     Publisher<UserState> findByUsername(String username) {
         UserState user = userGormService.findByUsername(username) as UserState
-
-        if (user != null) {
-            Flowable.just(user)
-        } else {
-            Flowable.empty()
-        }
+        user == null ? Flowable.empty() : Flowable.just(user)
     }
 }

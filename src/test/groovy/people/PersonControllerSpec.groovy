@@ -1,5 +1,6 @@
 package people
 
+import io.micronaut.http.HttpHeaders
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpStatus
 import io.micronaut.http.client.exceptions.HttpClientResponseException
@@ -18,15 +19,26 @@ class PersonControllerSpec extends AbstractServerSpec {
     @Shared
     long neilId
 
+    long extractIdFromLocationHeader(String locationHeader) {
+        locationHeader.replaceAll('/people/', '') as long
+    }
+
     void 'test creating people'() {
         when:
         String token = getJwtToken 'admin', 'password'
         HttpResponse response = personClient.createPerson 'Geddy', 'Lee', 64, "Bearer $token"
+
+        then:
+        response.status() == HttpStatus.CREATED
+
+        when:
+        long personId = extractIdFromLocationHeader(response.header(HttpHeaders.LOCATION))
+        response = personClient.get(personId)
         def json = response.body()
         geddyId = json.id
 
         then:
-        response.status == HttpStatus.CREATED
+        response.status == HttpStatus.OK
         json.firstName == 'Geddy'
         json.lastName == 'Lee'
         json.age == 64
@@ -34,11 +46,18 @@ class PersonControllerSpec extends AbstractServerSpec {
 
         when:
         response = personClient.createPerson 'Alex', 'Lifeson', 64, "Bearer $token"
+
+        then:
+        response.status() == HttpStatus.CREATED
+
+        when:
+        personId = extractIdFromLocationHeader(response.header(HttpHeaders.LOCATION))
+        response = personClient.get(personId)
         json = response.body()
         alexId = json.id
 
         then:
-        response.status == HttpStatus.CREATED
+        response.status == HttpStatus.OK
         json.firstName == 'Alex'
         json.lastName == 'Lifeson'
         json.age == 64
@@ -46,11 +65,17 @@ class PersonControllerSpec extends AbstractServerSpec {
 
         when:
         response = personClient.createPerson 'Neil', 'Peart', 65, "Bearer $token"
+        then:
+        response.status() == HttpStatus.CREATED
+
+        when:
+        personId = extractIdFromLocationHeader(response.header(HttpHeaders.LOCATION))
+        response = personClient.get(personId)
         json = response.body()
         neilId = json.id
 
         then:
-        response.status == HttpStatus.CREATED
+        response.status == HttpStatus.OK
         json.firstName == 'Neil'
         json.lastName == 'Peart'
         json.age == 65
@@ -90,12 +115,19 @@ class PersonControllerSpec extends AbstractServerSpec {
     void 'test disabling a person'() {
         when:
         String token = getJwtToken 'admin', 'password'
-        Map person = personClient.disable(neilId, "Bearer $token").body()
+        HttpResponse response = personClient.disable(neilId, "Bearer $token")
+
+        then:
+        response.status() == HttpStatus.OK
+
+        when:
+        long personId = extractIdFromLocationHeader(response.header(HttpHeaders.LOCATION))
+        Person person = personClient.get(personId).body()
 
         then:
         person.firstName == 'Neil'
         person.lastName == 'Peart'
-        person.enabled == false
+        !person.enabled
     }
 
     void 'test list enabled people after disabling someone'() {
@@ -226,11 +258,18 @@ class PersonControllerSpec extends AbstractServerSpec {
     void 'test enabling a person'() {
         when:
         String token = getJwtToken 'admin', 'password'
-        Map person = personClient.enable(neilId, "Bearer $token").body()
+        HttpResponse response = personClient.enable(neilId, "Bearer $token")
+
+        then:
+        response.status() == HttpStatus.OK
+
+        when:
+        long personId = extractIdFromLocationHeader(response.header(HttpHeaders.LOCATION))
+        Person person = personClient.get(personId).body()
 
         then:
         person.firstName == 'Neil'
         person.lastName == 'Peart'
-        person.enabled == true
+        person.enabled
     }
 }
