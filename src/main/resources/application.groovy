@@ -16,10 +16,10 @@ micronaut {
         }
         token {
             jwt {
+                enabled = true
                 bearer {
                     enabled = true
                 }
-                enabled = true
             }
         }
     }
