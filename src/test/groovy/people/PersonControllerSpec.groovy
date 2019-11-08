@@ -174,21 +174,19 @@ class PersonControllerSpec extends AbstractServerSpec {
     void 'test enabling a non-existent person'() {
         when:
         String token = getJwtToken 'admin', 'password'
-        personClient.enable 999, "Bearer $token"
+        HttpResponse httpResponse = personClient.enable 999, "Bearer $token"
 
         then:
-        HttpClientResponseException ex = thrown()
-        ex.status == HttpStatus.NOT_FOUND
+        httpResponse.status == HttpStatus.NOT_FOUND
     }
 
     void 'test disabling a non-existent person'() {
         when:
         String token = getJwtToken 'admin', 'password'
-        personClient.disable 999, "Bearer $token"
+        HttpResponse httpResponse = personClient.disable 999, "Bearer $token"
 
         then:
-        HttpClientResponseException ex = thrown()
-        ex.status == HttpStatus.NOT_FOUND
+        httpResponse.status == HttpStatus.NOT_FOUND
     }
 
     void 'test creating person with a negative age'() {
