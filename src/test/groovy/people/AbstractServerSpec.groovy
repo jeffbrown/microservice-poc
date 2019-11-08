@@ -3,6 +3,7 @@ package people
 import io.micronaut.context.ApplicationContext
 import io.micronaut.http.client.HttpClient
 import io.micronaut.runtime.server.EmbeddedServer
+import io.micronaut.security.token.jwt.render.AccessRefreshToken
 import spock.lang.AutoCleanup
 import spock.lang.Shared
 import spock.lang.Specification
@@ -25,8 +26,6 @@ abstract class AbstractServerSpec extends Specification {
     LoginClient loginClient = embeddedServer.applicationContext.getBean LoginClient
 
     protected String getJwtToken(String userName, String password) {
-        Map response = loginClient.login userName, password
-
-        response.accessToken
+        loginClient.login(userName, password).accessToken
     }
 }
