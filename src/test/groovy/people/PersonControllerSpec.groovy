@@ -145,11 +145,10 @@ class PersonControllerSpec extends AbstractServerSpec {
 
     void 'test retrieving a person that does not exist'() {
         when:
-        personClient.get 9999
+        HttpResponse httpResponse = personClient.get 9999
 
         then:
-        HttpClientResponseException ex = thrown()
-        ex.status == HttpStatus.NOT_FOUND
+        httpResponse.status == HttpStatus.NOT_FOUND
     }
 
     void 'test disabling an already disabled person'() {
